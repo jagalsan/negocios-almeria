@@ -10,6 +10,7 @@ use App\Models\RankingEntry;
 use App\Models\User;
 use App\Support\DomainNormalizer;
 use App\Support\NameNormalizer;
+use App\Support\Seo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -140,15 +141,17 @@ class ImportRankingsSpreadsheet
                 $category = $categories->get($categoryName)
                     ?? throw new InvalidArgumentException("No existe la categoría: {$categoryName}");
                 $count = $rankingRows->count();
+                $plural = Seo::lowerFirst($category->name_plural);
+                $article = Seo::isMasculine($plural) ? 'Los' : 'Las';
                 $ranking = Ranking::updateOrCreate(
                     ['category_id' => $category->id, 'municipality_id' => null],
                     [
-                        'title' => "Las {$count} mejores ".Str::lower($category->name_plural).' en Almería',
+                        'title' => "{$article} {$count} mejores {$plural} en Almería",
                         'slug' => $category->slug,
-                        'h1' => "Las {$count} mejores ".Str::lower($category->name_plural).' de Almería',
-                        'answer' => "Esta selección reúne {$count} ".Str::lower($category->name_plural).' de la provincia de Almería. Consulta el orden completo, el motivo de inclusión y los datos disponibles de cada empresa.',
-                        'primary_keyword' => 'mejores '.Str::lower($category->name_plural).' en Almería',
-                        'secondary_keywords' => [Str::lower($category->name_plural).' Almería', 'empresas digitales Almería', 'servicios digitales Almería'],
+                        'h1' => "{$article} {$count} mejores {$plural} de Almería",
+                        'answer' => "Esta selección reúne {$count} {$plural} de la provincia de Almería. Consulta el orden completo, el motivo de inclusión y los datos disponibles de cada empresa.",
+                        'primary_keyword' => "mejores {$plural} en Almería",
+                        'secondary_keywords' => ["{$plural} Almería", 'empresas digitales Almería', 'servicios digitales Almería'],
                         'intro' => '<h2>Cómo comparar estas empresas</h2><p>Revisa su especialización, experiencia, trabajos y datos de contacto. El orden se basa en la información editorial disponible para cada categoría.</p>',
                         'criteria' => ['Experiencia y actividad verificables', 'Sede o equipo en la provincia de Almería', 'Especialización relacionada con la categoría'],
                         'faq' => [['q' => '¿Cómo se elabora este ranking?', 'a' => 'El equipo revisa experiencia, trabajos, especialización y fuentes públicas.'], ['q' => '¿Se puede pagar por subir?', 'a' => 'No. Los patrocinios aparecen separados del orden editorial.'], ['q' => '¿Cada cuánto se revisa?', 'a' => 'Cada ranking se revisa al menos cada seis meses.'], ['q' => '¿Cómo se corrige un dato?', 'a' => 'La empresa puede reclamar su ficha o enviar una corrección.']],

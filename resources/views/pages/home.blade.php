@@ -1,3 +1,9 @@
+@php
+$schema = [
+    \App\Support\Seo::webPage('WebPage', route('home').'/', 'Agencias y empresas digitales en Almería: rankings '.date('Y'), null, ['about' => ['@id' => route('home').'#organization'], 'mainEntity' => ['@id' => route('home').'/#rankings']]),
+    ['@type' => 'ItemList', '@id' => route('home').'/#rankings', 'name' => 'Rankings de empresas digitales de Almería', 'numberOfItems' => $rankings->count(), 'itemListElement' => $rankings->values()->map(fn ($ranking, $index) => ['@type' => 'ListItem', 'position' => $index + 1, 'name' => $ranking->category->name_plural.' en Almería', 'url' => route('rankings.show', $ranking->slug)])->all()],
+];
+@endphp
 @extends('layouts.app')
 @section('content')
 <section class="hero"><div class="container hero-grid"><div><h1 class="h1">Las mejores empresas digitales de Almería, elegidas con criterio</h1><p class="lead">Rankings independientes de agencias, desarrolladores, startups y profesionales digitales de la provincia de Almería. Los revisamos a mano, explicamos por qué está cada empresa y los actualizamos cada semestre.</p><form class="search" action="{{ route('search') }}"><input type="search" name="q" aria-label="Buscar" placeholder="Busca una empresa o un servicio: diseño web, SEO, apps…"><button class="button">Buscar</button></form></div><p class="hero-note">Nadie puede pagar por subir en un ranking. Los patrocinios aparecen siempre separados y etiquetados.</p></div></section>

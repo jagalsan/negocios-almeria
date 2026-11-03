@@ -3,15 +3,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Empresas digitales en Almería: rankings '.date('Y').' · Negocios Almería' }}</title>
-    <meta name="description" content="{{ $description ?? 'Las mejores agencias, desarrolladores y startups de Almería, elegidas con criterios públicos. Rankings revisados a mano.' }}">
-    <meta name="robots" content="{{ $robots ?? 'index,follow' }}">
-    <link rel="canonical" href="{{ $canonical ?? url()->current().'/' }}">
+    @php
+        $title ??= 'Agencias y empresas digitales en Almería: rankings '.date('Y');
+        $description ??= 'Rankings '.date('Y').' de agencias SEO, de marketing, desarrollo web, software y startups de Almería, con criterios públicos y revisados a mano.';
+        $canonical ??= request()->is('/') ? route('home').'/' : url()->current();
+        $ogImage ??= asset('og-image.png');
+    @endphp
+    <title>{{ $title }}</title>
+    <meta name="description" content="{{ $description }}">
+    <meta name="robots" content="{{ $robots ?? 'index,follow,max-image-preview:large' }}">
+    <link rel="canonical" href="{{ $canonical }}">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate" type="text/plain" href="{{ route('llms') }}" title="LLMs">
     <meta property="og:locale" content="es_ES"><meta property="og:site_name" content="Negocios Almería"><meta property="og:type" content="website">
-    <meta property="og:title" content="{{ $title ?? 'Negocios Almería' }}"><meta property="og:description" content="{{ $description ?? 'Rankings independientes de empresas digitales de Almería.' }}"><meta property="og:url" content="{{ $canonical ?? url()->current().'/' }}">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:title" content="{{ $title }}"><meta property="og:description" content="{{ $description }}"><meta property="og:url" content="{{ $canonical }}">
+    <meta property="og:image" content="{{ $ogImage }}"><meta property="og:image:alt" content="{{ $title }}">
+    <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{{ $title }}"><meta name="twitter:description" content="{{ $description }}"><meta name="twitter:image" content="{{ $ogImage }}">
+    <script type="application/ld+json">{!! \App\Support\Seo::graph($schema ?? [\App\Support\Seo::webPage('WebPage', $canonical, $title, $description)]) !!}</script>
     @if(config('services.google.site_verification'))
     <meta name="google-site-verification" content="{{ config('services.google.site_verification') }}">
     @endif
@@ -49,9 +57,9 @@
     <footer class="site-footer">
         <div class="container"><div class="footer-grid">
             <div><a class="logo" href="{{ route('home') }}">negocios almería</a><p>Rankings independientes de empresas digitales de Almería. Revisados a mano.</p></div>
-            <div><h2 class="footer-title">Rankings</h2><ul class="footer-links">@foreach($navCategories->take(6) as $category)<li><a href="{{ route('rankings.show', $category->slug) }}">{{ $category->name_plural }}</a></li>@endforeach</ul></div>
-            <div><h2 class="footer-title">Municipios</h2><ul class="footer-links">@foreach(['Almería','Roquetas de Mar','El Ejido','Vícar','Níjar','Huércal de Almería'] as $municipality)<li><a href="{{ route('companies.index', ['municipio' => Str::slug($municipality)]) }}">{{ $municipality }}</a></li>@endforeach</ul></div>
-            <div><h2 class="footer-title">El directorio</h2><ul class="footer-links"><li><a href="{{ route('pages.como-elaboramos-los-rankings') }}">Cómo elaboramos los rankings</a></li><li><a href="{{ route('pages.sobre-negocios-almeria') }}">Sobre Negocios Almería</a></li><li><a href="{{ route('pages.anade-tu-empresa') }}">Añade tu empresa</a></li><li><a href="{{ route('pages.anunciate') }}">Anúnciate</a></li><li><a href="{{ route('pages.contacto') }}">Contacto</a></li></ul></div>
+            <div><p class="footer-title">Rankings</p><ul class="footer-links">@foreach($navCategories->take(6) as $category)<li><a href="{{ route('rankings.show', $category->slug) }}">{{ $category->name_plural }}</a></li>@endforeach</ul></div>
+            <div><p class="footer-title">Municipios</p><ul class="footer-links">@foreach(['Almería','Roquetas de Mar','El Ejido','Vícar','Níjar','Huércal de Almería'] as $municipality)<li><a href="{{ route('companies.index', ['municipio' => Str::slug($municipality)]) }}">{{ $municipality }}</a></li>@endforeach</ul></div>
+            <div><p class="footer-title">El directorio</p><ul class="footer-links"><li><a href="{{ route('pages.como-elaboramos-los-rankings') }}">Cómo elaboramos los rankings</a></li><li><a href="{{ route('pages.sobre-negocios-almeria') }}">Sobre Negocios Almería</a></li><li><a href="{{ route('pages.anade-tu-empresa') }}">Añade tu empresa</a></li><li><a href="{{ route('pages.anunciate') }}">Anúnciate</a></li><li><a href="{{ route('pages.contacto') }}">Contacto</a></li></ul></div>
         </div><div class="footer-bottom"><span>© {{ date('Y') }} Negocios Almería · Hecho en Almería</span><span><a href="{{ route('pages.aviso-legal') }}">Aviso legal</a> · <a href="{{ route('pages.privacidad') }}">Privacidad</a> · <a href="{{ route('pages.cookies') }}">Cookies</a> · <button type="button" class="footer-cookie-settings" data-cookie-settings>Configurar cookies</button> · <a href="{{ route('pages.condiciones') }}">Condiciones</a></span></div></div>
     </footer>
     <x-cookie-consent />

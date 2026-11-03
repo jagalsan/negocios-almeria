@@ -9,3 +9,6 @@
 - Las fuentes públicas se cargarán desde Bunny durante desarrollo y deben autoalojarse antes del despliegue de producción.
 - El límite de categorías por empresa se amplía de 3 a 5 para conservar la clasificación del Excel editorial entregado el 10 de octubre de 2026.
 - El Excel se importa íntegro como borrador: ninguna empresa ni ranking se publica hasta revisar webs, sedes y textos pendientes.
+- SEO: cada página publica un único grafo JSON-LD (Organization + WebSite + nodos propios) generado con `App\Support\Seo`. Si una ficha o ranking no tiene `seo_title`/`seo_description`, se generan a partir de sus datos reales (categoría principal, municipio, servicios, nº de empresas) con títulos ≤ 60 y descripciones ≤ 155 caracteres. No se añade `Review` ni `AggregateRating`.
+- Las URL canónicas van sin barra final porque el servidor redirige con 301 las URL con barra a su versión sin barra.
+- `/empresas?municipio=…` es indexable y entra en el sitemap como página de municipio; los filtros por especialidad son `noindex,follow` porque ya existe el ranking de cada especialidad.

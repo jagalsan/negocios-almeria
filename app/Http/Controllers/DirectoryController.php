@@ -39,7 +39,20 @@ class DirectoryController extends Controller
         $query->when($request->string('categoria')->toString(), fn ($query, $slug) => $query->whereHas('categories', fn ($query) => $query->where('slug', $slug)));
         $query->when($request->string('municipio')->toString(), fn ($query, $slug) => $query->whereHas('municipality', fn ($query) => $query->where('slug', $slug)));
 
-        return view('pages.companies', ['companies' => $query->paginate(24)->withQueryString(), 'categories' => Category::where('is_published', true)->orderBy('sort_order')->get(), 'municipalities' => Municipality::orderBy('name')->get()]);
+        $municipalities = Municipality::orderBy('name')->get();
+        $municipality = $municipalities->firstWhere('slug', $request->string('municipio')->toString());
+        $companies = $query->paginate(24)->withQueryString();
+        $indexable = ! $request->filled('categoria') && ($municipality || ! $request->filled('municipio')) && $companies->isNotEmpty();
+        $canonicalQuery = array_filter(['municipio' => $municipality?->slug, 'page' => $companies->currentPage() > 1 ? $companies->currentPage() : null]);
+
+        return view('pages.companies', [
+            'companies' => $companies,
+            'categories' => Category::where('is_published', true)->orderBy('sort_order')->get(),
+            'municipalities' => $municipalities,
+            'municipality' => $municipality,
+            'robots' => $indexable ? null : 'noindex,follow',
+            'canonical' => route('companies.index', $canonicalQuery),
+        ]);
     }
 
     public function company(string $slug)
@@ -71,6 +84,7 @@ class DirectoryController extends Controller
         return response()->view('pages.sitemap', [
             'rankings' => Ranking::published()->get(['slug', 'updated_at']),
             'companies' => Company::published()->where('seo_noindex', false)->get(['slug', 'updated_at']),
+            'municipalities' => Municipality::whereHas('companies', fn ($query) => $query->published())->orderBy('name')->get(['slug']),
             'pages' => Page::where('status', 'published')->get(['slug', 'updated_at']),
         ])->header('Content-Type', 'application/xml; charset=UTF-8');
     }

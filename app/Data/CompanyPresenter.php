@@ -4,14 +4,16 @@ namespace App\Data;
 
 use App\Models\Company;
 use App\Support\RankingPositions;
+use App\Support\Seo;
 
 class CompanyPresenter
 {
     public static function make(Company $company): array
     {
         $company->loadMissing(['municipality', 'categories', 'rankingEntries.ranking']);
+        $primaryCategory = ($company->categories->first(fn ($category) => $category->pivot->is_primary) ?? $company->categories->first())?->name;
 
-        return [
+        $data = [
             'uuid' => $company->uuid,
             'slug' => $company->slug,
             'url' => route('companies.show', $company->slug),
@@ -23,7 +25,9 @@ class CompanyPresenter
             'services' => $company->services ?? [],
             'sectors' => $company->sectors ?? [],
             'categories' => $company->categories->map(fn ($category) => ['slug' => $category->slug, 'name' => $category->name, 'isPrimary' => (bool) $category->pivot->is_primary])->values()->all(),
+            'primaryCategory' => $primaryCategory,
             'municipality' => $company->municipality?->name,
+            'municipalitySlug' => $company->municipality?->slug,
             'address' => $company->address,
             'postalCode' => $company->postal_code,
             'lat' => $company->lat,
@@ -50,5 +54,47 @@ class CompanyPresenter
                 ->all(),
             'updatedAt' => $company->updated_at?->toIso8601String(),
         ];
+
+        return [...$data, 'seo' => [
+            'title' => $company->seo_title ?: self::seoTitle($data),
+            'description' => Seo::description($company->seo_description ?: self::seoDescription($data)),
+            'robots' => $company->seo_noindex ? 'noindex,follow' : null,
+        ]];
+    }
+
+    private static function seoTitle(array $company): string
+    {
+        $category = Seo::lowerFirst($company['primaryCategory'] ?? 'Empresa digital');
+        $municipality = $company['municipality'] ?? 'Almería';
+
+        return Seo::title(
+            "{$company['name']}: {$category} en {$municipality} · ".Seo::SITE_NAME,
+            "{$company['name']}: {$category} en {$municipality}",
+            "{$company['name']}: {$category} en Almería",
+            "{$company['name']} · ".Seo::SITE_NAME,
+            $company['name'],
+        );
+    }
+
+    private static function seoDescription(array $company): string
+    {
+        $short = trim((string) $company['shortDescription']);
+
+        if (mb_strlen($short) >= 110) {
+            return $short;
+        }
+
+        $category = Seo::lowerFirst($company['primaryCategory'] ?? 'Empresa digital');
+        $municipality = $company['municipality'];
+        $place = ! $municipality || $municipality === 'Almería' ? 'Almería' : "{$municipality} (Almería)";
+        $services = array_slice(array_filter($company['services'], 'is_string'), 0, 4);
+        $rankings = count($company['rankings']);
+
+        return collect([
+            "{$company['name']} es ".(Seo::isMasculine($category) ? 'un' : 'una')." {$category} en {$place}.",
+            $services ? 'Servicios: '.implode(', ', $services).'.' : null,
+            ! $services && $rankings ? 'Aparece en '.$rankings.($rankings === 1 ? ' ranking' : ' rankings').' de '.Seo::SITE_NAME.'.' : null,
+            'Consulta su ficha, web y contacto.',
+        ])->filter()->join(' ');
     }
 }

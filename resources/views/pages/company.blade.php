@@ -1,10 +1,35 @@
-@extends('layouts.app', ['title' => $company['name'].': empresa digital en '.$company['municipality'].' · Negocios Almería', 'description' => $company['shortDescription'], 'canonical' => $company['url']])
-@push('head')
-@php $jsonLd=['@context'=>'https://schema.org','@graph'=>[['@type'=>['ProfilePage'],'@id'=>$company['url'].'#webpage','url'=>$company['url'],'name'=>$company['name']],['@type'=>'ProfessionalService','@id'=>$company['url'].'#business','name'=>$company['name'],'url'=>$company['website'],'description'=>$company['shortDescription'],'areaServed'=>'Provincia de Almería','address'=>['@type'=>'PostalAddress','streetAddress'=>$company['address'],'postalCode'=>$company['postalCode'],'addressLocality'=>$company['municipality'],'addressRegion'=>'Almería','addressCountry'=>'ES'],'knowsAbout'=>$company['services']]]]; @endphp
-<script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
-@endpush
+@php
+$title = $company['seo']['title'];
+$description = $company['seo']['description'];
+$canonical = $company['url'];
+$robots = $company['seo']['robots'];
+$ogImage = $company['cover'];
+$municipalityUrl = $company['municipalitySlug'] ? route('companies.index', ['municipio' => $company['municipalitySlug']]) : null;
+$schema = [
+    \App\Support\Seo::webPage('ProfilePage', $canonical, $title, $description, ['breadcrumb' => ['@id' => $canonical.'#breadcrumb'], 'mainEntity' => ['@id' => $canonical.'#business'], 'dateModified' => $company['updatedAt']]),
+    [
+        '@type' => 'ProfessionalService',
+        '@id' => $canonical.'#business',
+        'name' => $company['name'],
+        'url' => $company['website'],
+        'description' => $company['shortDescription'],
+        'image' => $company['cover'] ?? $company['logo'],
+        'logo' => $company['logo'],
+        'telephone' => $company['phone'],
+        'email' => $company['email'],
+        'foundingDate' => $company['foundedYear'] ? (string) $company['foundedYear'] : null,
+        'address' => ['@type' => 'PostalAddress', 'streetAddress' => $company['address'], 'postalCode' => $company['postalCode'], 'addressLocality' => $company['municipality'], 'addressRegion' => 'Almería', 'addressCountry' => 'ES'],
+        'geo' => $company['lat'] && $company['lng'] ? ['@type' => 'GeoCoordinates', 'latitude' => (float) $company['lat'], 'longitude' => (float) $company['lng']] : null,
+        'areaServed' => ['@type' => 'AdministrativeArea', 'name' => 'Provincia de Almería'],
+        'knowsAbout' => array_values($company['services']),
+        'sameAs' => collect($company['social'])->flatten()->filter(fn ($value) => is_string($value) && str_starts_with($value, 'http'))->values()->all(),
+    ],
+    \App\Support\Seo::breadcrumbs($canonical, array_values(array_filter([['Empresas', route('companies.index')], $municipalityUrl ? [$company['municipality'], $municipalityUrl] : null, [$company['name'], null]]))),
+];
+@endphp
+@extends('layouts.app')
 @section('content')
-<div class="container breadcrumbs"><ol><li><a href="{{ route('home') }}">Inicio</a></li><li><a href="{{ route('companies.index') }}">Empresas</a></li><li>{{ $company['name'] }}</li></ol></div>
+<div class="container breadcrumbs"><ol><li><a href="{{ route('home') }}">Inicio</a></li><li><a href="{{ route('companies.index') }}">Empresas</a></li>@if($municipalityUrl)<li><a href="{{ $municipalityUrl }}">{{ $company['municipality'] }}</a></li>@endif<li>{{ $company['name'] }}</li></ol></div>
 <header class="page-heading"><div class="container company-heading"><div class="logo-box logo-box-large">{{ Str::upper(Str::substr($company['name'],0,2)) }}</div><div><h1>{{ $company['name'] }}</h1><p class="muted">{{ $company['categories'][0]['name'] ?? 'Empresa digital' }} en {{ $company['municipality'] }}</p><span class="badge {{ $company['verified'] ? 'badge-verified' : '' }}">{{ $company['verified'] ? 'Ficha verificada' : 'Ficha no reclamada' }}</span></div><div class="row-actions">@if($company['website'])<a class="button" href="{{ $company['website'] }}" rel="noopener">Visitar web</a>@endif @if($company['phone'])<a class="button button-secondary" href="tel:{{ $company['phone'] }}">Llamar</a>@endif</div></div></header>
 @if(count($company['rankings']))
 <section class="ranking-memberships section-tint" aria-labelledby="ranking-memberships-title">
