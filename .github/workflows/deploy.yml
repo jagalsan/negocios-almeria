@@ -43,6 +43,13 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+      - name: Comprobar conexión SSH
+        run: |
+          if ! out=$(ssh -v -p "$DEPLOY_PORT" -o BatchMode=yes -o ConnectTimeout=20 "$DEPLOY_USER@$DEPLOY_HOST" true 2>&1); then
+            msg=$(printf '%s\n' "$out" | grep -E 'Connecting|Connection|timed out|refused|reset|closed|Permission|denied|Host key|known_hosts|Offering|Authentications|Server accepts|Load key|error' | tail -15 | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=SSH::$msg"
+            exit 1
+          fi
       - name: Subir aplicación
         run: >-
           rsync -az --delete
