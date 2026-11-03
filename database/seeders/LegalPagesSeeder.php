@@ -28,7 +28,7 @@ class LegalPagesSeeder extends Seeder
                 'title' => 'Aviso legal',
                 'description' => 'Información legal, condiciones de acceso y responsabilidades de Negocios Almería.',
                 'body' => <<<HTML
-<p>Este aviso regula el acceso y uso de <strong>{$tradeName}</strong>, disponible en negociosalmeria.es (el «sitio web»). Al navegar por el sitio aceptas estas condiciones.</p>
+<p>Este aviso regula el acceso y uso de <strong>{$tradeName}</strong>, disponible en negociosalmeria.com (el «sitio web»). Al navegar por el sitio aceptas estas condiciones.</p>
 <h2>1. Titular del sitio</h2>
 <dl class="legal-data"><div><dt>Responsable</dt><dd>{$owner}</dd></div><div><dt>NIF/CIF</dt><dd>{$taxId}</dd></div><div><dt>Domicilio</dt><dd>{$address}</dd></div><div><dt>Email</dt><dd><a href="mailto:{$email}">{$email}</a></dd></div><div><dt>Registro</dt><dd>{$registry}</dd></div></dl>
 <h2>2. Finalidad</h2>

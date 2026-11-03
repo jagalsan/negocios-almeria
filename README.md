@@ -166,7 +166,7 @@ GET /api/v1/municipalities
 Ejemplo:
 
 ```js
-const response = await fetch('https://negociosalmeria.es/api/v1/rankings/agencias-de-marketing', {
+const response = await fetch('https://negociosalmeria.com/api/v1/rankings/agencias-de-marketing', {
   headers: { Accept: 'application/json' },
 });
 const ranking = await response.json();
@@ -199,7 +199,7 @@ LEGAL_OWNER_NAME="Nombre o razón social"
 LEGAL_TRADE_NAME="Negocios Almería"
 LEGAL_OWNER_NIF="NIF o CIF"
 LEGAL_OWNER_ADDRESS="Domicilio completo"
-LEGAL_OWNER_EMAIL="contacto@negociosalmeria.es"
+LEGAL_OWNER_EMAIL="contacto@negociosalmeria.com"
 LEGAL_REGISTRY="Datos registrales, si corresponden"
 LEGAL_JURISDICTION="Almería"
 

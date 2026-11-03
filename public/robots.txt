@@ -22,4 +22,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://negociosalmeria.es/sitemap.xml
+Sitemap: https://negociosalmeria.com/sitemap.xml
