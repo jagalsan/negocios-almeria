@@ -44,10 +44,20 @@ jobs:
           printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
       - name: Comprobar conexión SSH
+        env:
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
+          missing=""
+          for name in DEPLOY_HOST DEPLOY_PORT DEPLOY_USER DEPLOY_PATH KNOWN_HOSTS SSH_AUTH_SOCK; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error title=Faltan secretos::Vacíos o sin crear:$missing"
+            exit 1
+          fi
           if ! out=$(ssh -v -p "$DEPLOY_PORT" -o BatchMode=yes -o ConnectTimeout=20 "$DEPLOY_USER@$DEPLOY_HOST" true 2>&1); then
-            msg=$(printf '%s\n' "$out" | grep -E 'Connecting|Connection|timed out|refused|reset|closed|Permission|denied|Host key|known_hosts|Offering|Authentications|Server accepts|Load key|error' | tail -15 | sed ':a;N;$!ba;s/\n/%0A/g')
-            echo "::error title=SSH::$msg"
+            msg=$(printf '%s\n' "$out" | grep -vE '^debug1: (Reading|/etc|channel|client_input|Requesting|Sending|kex_|SSH2_MSG|Remote|Local|Server host key|Authentication succeeded|identity file|pubkey_prepare|get_agent)' | tail -15 | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=SSH::${msg:-sin salida de ssh}"
             exit 1
           fi
       - name: Subir aplicación
