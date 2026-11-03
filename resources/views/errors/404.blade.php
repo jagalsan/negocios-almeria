@@ -1,0 +1,2 @@
+@extends('layouts.app', ['title' => 'Esta página no existe · Negocios Almería', 'robots' => 'noindex'])
+@section('content')<section class="section"><div class="container reading"><h1 class="h1 h1-ranking">Esta página no existe</h1><p class="lead">Busca una empresa o consulta nuestros rankings.</p><form class="search" action="{{ route('search') }}"><input name="q" placeholder="Empresa o servicio"><button class="button">Buscar</button></form><p style="margin-top:40px"><a href="{{ route('rankings.index') }}">Ver todos los rankings</a></p></div></section>@endsection

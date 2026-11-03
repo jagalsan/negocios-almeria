@@ -1,0 +1,76 @@
+name: Desplegar
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      PHP_BIN: ${{ vars.DEPLOY_PHP || 'php' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, gd, zip
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --no-dev --optimize-autoloader --no-interaction
+      - run: npm ci && npm run build
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Configurar servidor conocido
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+      - name: Subir aplicación
+        run: >-
+          rsync -az --delete
+          -e "ssh -p $DEPLOY_PORT"
+          --exclude=.env
+          --exclude=.git/
+          --exclude=.github/
+          --exclude=node_modules/
+          --exclude=tests/
+          --exclude=.DS_Store
+          --exclude='database/*.sqlite'
+          --exclude=storage/app/
+          --exclude=storage/framework/
+          --exclude=storage/logs/
+          --exclude=bootstrap/cache/
+          --exclude=public/storage
+          ./ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+      - name: Finalizar despliegue
+        run: |
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "DEPLOY_PATH='$DEPLOY_PATH' PHP_BIN='$PHP_BIN' bash -s" <<'EOF'
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+          test -f .env
+          mkdir -p storage/app/public storage/app/private storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+          rm -f bootstrap/cache/*.php
+          "$PHP_BIN" artisan migrate --force
+          [ -L public/storage ] || ln -s ../storage/app/public public/storage
+          "$PHP_BIN" artisan optimize
+          "$PHP_BIN" artisan filament:optimize
+          "$PHP_BIN" artisan rankings:snapshot
+          EOF

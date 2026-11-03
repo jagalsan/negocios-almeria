@@ -1,0 +1,2 @@
+@extends('layouts.app', ['title' => 'Confirma tu email · Negocios Almería', 'robots' => 'noindex,nofollow'])
+@section('content')<div class="auth-shell"><h1>Confirma tu email</h1><p>Confirma tu email para poder añadir o reclamar empresas. ¿No te ha llegado? Puedes reenviar el enlace.</p>@if(session('status')==='verification-link-sent')<div class="alert">Te hemos enviado un enlace nuevo.</div>@endif<form method="post" action="/email/verification-notification">@csrf<button class="button">Reenviar enlace</button></form></div>@endsection

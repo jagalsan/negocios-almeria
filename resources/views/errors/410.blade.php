@@ -1,0 +1,2 @@
+@extends('layouts.app', ['title' => 'Empresa retirada · Negocios Almería', 'robots' => 'noindex'])
+@section('content')<section class="section"><div class="container reading"><h1 class="h1 h1-ranking">Esta empresa ya no aparece en el directorio</h1><p class="lead">Consulta otras empresas y rankings de la provincia de Almería.</p><a class="button" href="{{ route('rankings.index') }}">Ver rankings</a></div></section>@endsection
