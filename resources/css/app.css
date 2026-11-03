@@ -154,6 +154,13 @@ th { font: 650 .875rem/1.4 'Archivo', sans-serif; }
 .company-list { border-top: 1px solid #C9D6D0; }
 .company-list-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 24px; padding: 28px 0; border-bottom: 1px solid #C9D6D0; align-items: center; text-decoration: none; }
 .company-list-row h2, .company-list-row h3 { margin: 0 0 4px; font: 700 1.25rem/1.2 'Archivo', sans-serif; }
+.pagination { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.pagination-summary { margin: 0; font: 520 .94rem/1.4 'Archivo', sans-serif; }
+.pagination-pages { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.pagination-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; padding: 0 12px; border: 1px solid #0D5E6D; border-radius: 4px; background: #FFFFFF; color: #0D5E6D; font: 620 .94rem/1 'Archivo', sans-serif; text-decoration: none; transition: background-color .15s, color .15s; }
+a.pagination-link:hover { background: #0D5E6D; color: #FFFFFF; }
+.pagination-link.is-current { background: #0D5E6D; color: #FFFFFF; }
+.pagination-link.is-disabled { border-color: #C9D6D0; color: #4A5B5D; background: #EEF2F1; cursor: default; }
 
 .form { max-width: 720px; }
 .field { margin-bottom: 24px; }
