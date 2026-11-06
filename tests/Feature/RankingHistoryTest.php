@@ -48,3 +48,14 @@ it('registra y calcula subidas y bajadas entre instantáneas', function () {
     expect(RankingPositions::forCompany($ranking, $companies[0])['movement'])->toBe(-1)
         ->and(RankingPositions::forCompany($ranking, $companies[2])['movement'])->toBe(1);
 });
+
+it('ajusta el h1 al número de empresas visibles y enlaza otros rankings', function () {
+    [$ranking] = rankingHistoryFixture();
+    $ranking->update(['h1' => 'Las 10 mejores consultoras IT de Almería', 'status' => 'published', 'published_at' => now()]);
+    $other = Ranking::create([...$ranking->only(['title', 'answer', 'intro', 'criteria', 'faq', 'closing_text', 'author_id']), 'category_id' => Category::create(['name' => 'Coworking', 'name_plural' => 'Coworkings', 'slug' => 'coworkings'])->id, 'slug' => 'otro-ranking', 'h1' => 'Otro', 'primary_keyword' => 'otro ranking almería', 'status' => 'draft']);
+
+    $this->get(route('rankings.show', $ranking->slug))
+        ->assertOk()
+        ->assertSee('Las 5 mejores consultoras IT de Almería')
+        ->assertDontSee(route('rankings.show', $other->slug));
+});

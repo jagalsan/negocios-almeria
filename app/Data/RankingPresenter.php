@@ -31,7 +31,7 @@ class RankingPresenter
                 'canonical' => $canonical,
                 'robots' => 'index,follow',
             ],
-            'h1' => $ranking->h1,
+            'h1' => preg_replace('/\b\d+ mejores\b/u', $entries->count().' mejores', $ranking->h1),
             'answer' => $ranking->answer,
             'introHtml' => $ranking->intro,
             'criteria' => $ranking->criteria ?? [],
@@ -46,6 +46,9 @@ class RankingPresenter
             })->all(),
             'faq' => $ranking->faq ?? [],
             'closingText' => $ranking->closing_text,
+            'related' => Ranking::published()->whereKeyNot($ranking->id)->with('category')->orderBy('title')->get()
+                ->map(fn (Ranking $related) => ['name' => $related->category->name_plural.' en Almería', 'url' => route('rankings.show', $related->slug)])
+                ->all(),
         ];
     }
 }

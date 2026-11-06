@@ -64,6 +64,7 @@ $schema = [
 <section class="section section-tint" style="margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)"><div class="company-grid"><div><h2 class="section-title">Cómo hemos elegido</h2><ol>@foreach($ranking['criteria'] as $criterion)<li>{{ $criterion }}</li>@endforeach</ol><p><a href="{{ route('pages.como-elaboramos-los-rankings') }}">Lee la metodología completa</a></p></div><div class="heading-meta">El orden lo decide el equipo editorial. Revisamos el ranking al menos cada seis meses.</div></div></section>
 <section class="section prose">{!! $ranking['introHtml'] !!}</section>
 <section class="section reading"><h2 class="section-title">Preguntas frecuentes</h2><div class="faq">@foreach($ranking['faq'] as $faq)<details><summary>{{ $faq['q'] }}</summary><p>{{ $faq['a'] }}</p></details>@endforeach</div></section>
+@if($ranking['related'])<section class="section reading"><h2 class="section-title">Otros rankings de empresas en Almería</h2><ul>@foreach($ranking['related'] as $related)<li><a href="{{ $related['url'] }}">{{ $related['name'] }}</a></li>@endforeach</ul></section>@endif
 <section class="section section-tint" style="margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)"><h2 class="section-title">¿Tu empresa debería estar aquí?</h2><p class="lead">{{ $ranking['closingText'] }}</p><div class="row-actions"><a class="button" href="{{ route('pages.anade-tu-empresa') }}">Añadir mi empresa</a><a class="button button-secondary" href="{{ route('companies.index') }}">Reclamar mi ficha</a></div></section>
 </div>
 @endsection
