@@ -3,8 +3,8 @@ $title = $ranking['seo']['title'];
 $description = $ranking['seo']['description'];
 $canonical = $ranking['seo']['canonical'];
 $schema = [
-    \App\Support\Seo::webPage('CollectionPage', $canonical, $title, $description, ['breadcrumb' => ['@id' => $canonical.'#breadcrumb'], 'mainEntity' => ['@id' => $canonical.'#list'], 'datePublished' => $ranking['publishedAt'], 'dateModified' => $ranking['reviewedAt'], 'publisher' => ['@id' => route('home').'#organization']]),
-    ['@type' => 'ItemList', '@id' => $canonical.'#list', 'name' => $ranking['h1'], 'numberOfItems' => count($ranking['entries']), 'itemListOrder' => 'https://schema.org/ItemListOrderAscending', 'itemListElement' => collect($ranking['entries'])->map(fn ($entry) => ['@type' => 'ListItem', 'position' => $entry['position'], 'name' => $entry['company']['name'], 'url' => $entry['company']['url']])->values()->all()],
+    \App\Support\Seo::webPage('CollectionPage', $canonical, $title, $description, ['breadcrumb' => ['@id' => $canonical.'#breadcrumb'], 'mainEntity' => ['@id' => $canonical.'#list'], 'datePublished' => $ranking['publishedAt'], 'dateModified' => $ranking['reviewedAt'], 'publisher' => ['@id' => route('home').'#organization'], 'author' => ['@id' => route('home').'#organization'], 'about' => ['@type' => 'Thing', 'name' => $ranking['category']['namePlural'].' en Almería'], 'spatialCoverage' => ['@type' => 'AdministrativeArea', 'name' => 'Provincia de Almería'], 'abstract' => $ranking['summary']]),
+    ['@type' => 'ItemList', '@id' => $canonical.'#list', 'name' => $ranking['h1'], 'numberOfItems' => count($ranking['entries']), 'itemListOrder' => 'https://schema.org/ItemListOrderAscending', 'itemListElement' => collect($ranking['entries'])->map(fn ($entry) => ['@type' => 'ListItem', 'position' => $entry['position'], 'name' => $entry['company']['name'], 'url' => $entry['company']['url'], 'description' => $entry['reason']])->values()->all()],
     $ranking['faq'] ? ['@type' => 'FAQPage', '@id' => $canonical.'#faq', 'mainEntity' => collect($ranking['faq'])->map(fn ($faq) => ['@type' => 'Question', 'name' => $faq['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq['a']]])->values()->all()] : null,
     \App\Support\Seo::breadcrumbs($canonical, [['Rankings', route('rankings.index')], [$ranking['category']['namePlural'], null]]),
 ];
@@ -12,7 +12,7 @@ $schema = [
 @extends('layouts.app')
 @section('content')
 <div class="container breadcrumbs"><ol><li><a href="{{ route('home') }}">Inicio</a></li><li><a href="{{ route('rankings.index') }}">Rankings</a></li><li>{{ $ranking['category']['namePlural'] }}</li></ol></div>
-<header class="page-heading"><div class="container heading-grid"><div><h1 class="h1 h1-ranking">{{ $ranking['h1'] }}</h1><div class="direct-answer">{{ $ranking['answer'] }}</div></div><div class="heading-meta">Revisado el {{ \Carbon\Carbon::parse($ranking['reviewedAt'])->translatedFormat('j \d\e F \d\e Y') }}<br>Por {{ $ranking['author']['name'] }}<br>{{ count($ranking['entries']) }} empresas</div></div></header>
+<header class="page-heading"><div class="container heading-grid"><div><h1 class="h1 h1-ranking">{{ $ranking['h1'] }}</h1><div class="direct-answer">{{ $ranking['answer'] }}</div>@if($ranking['summary'])<p class="muted">{{ $ranking['summary'] }}</p>@endif</div><div class="heading-meta">Revisado el {{ \Carbon\Carbon::parse($ranking['reviewedAt'])->translatedFormat('j \d\e F \d\e Y') }}<br>Por {{ $ranking['author']['name'] }}<br>{{ count($ranking['entries']) }} empresas</div></div></header>
 <div class="container">
 @if(count($ranking['sponsored']))
 <section class="sponsored">

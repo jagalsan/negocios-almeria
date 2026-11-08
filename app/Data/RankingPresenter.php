@@ -29,10 +29,11 @@ class RankingPresenter
                 'title' => $ranking->seo_title ?: Seo::title("{$heading} ({$year}) · ".Seo::SITE_NAME, "{$heading} ({$year})", "Top {$entries->count()} {$plural} en Almería ({$year})", "Top {$entries->count()} {$plural} en Almería", $heading),
                 'description' => Seo::description($ranking->seo_description ?: "Ranking {$year} de {$article} {$entries->count()} mejores {$plural} de Almería, revisado a mano: motivo de inclusión, servicios y contacto de cada empresa."),
                 'canonical' => $canonical,
-                'robots' => 'index,follow',
+                'robots' => Seo::ROBOTS,
             ],
             'h1' => preg_replace('/\b\d+ mejores\b/u', $entries->count().' mejores', $ranking->h1),
             'answer' => $ranking->answer,
+            'summary' => self::summary($ranking, $entries, $heading),
             'introHtml' => $ranking->intro,
             'criteria' => $ranking->criteria ?? [],
             'author' => ['name' => $ranking->author->name],
@@ -50,5 +51,21 @@ class RankingPresenter
                 ->map(fn (Ranking $related) => ['name' => $related->category->name_plural.' en Almería', 'url' => route('rankings.show', $related->slug)])
                 ->all(),
         ];
+    }
+
+    private static function summary(Ranking $ranking, $entries, string $heading): ?string
+    {
+        if ($entries->isEmpty()) {
+            return null;
+        }
+
+        $names = $entries->take(3)->map(fn ($entry) => $entry->company->name)->values();
+        $list = $names->count() > 1 ? $names->slice(0, -1)->join(', ').' y '.$names->last() : $names->first();
+        $rest = $entries->count() - $names->count();
+        $date = ($ranking->reviewed_at ?? $ranking->updated_at)?->translatedFormat('F \\d\\e Y');
+
+        return "En resumen: {$heading} según nuestra revisión de {$date} son {$list}"
+            .($rest > 0 ? ", seguidas de {$rest} empresas más con web propia y sede en la provincia." : '.')
+            .' El orden es editorial y no se puede comprar.';
     }
 }

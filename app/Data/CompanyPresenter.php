@@ -55,7 +55,7 @@ class CompanyPresenter
             'updatedAt' => $company->updated_at?->toIso8601String(),
         ];
 
-        return [...$data, 'seo' => [
+        return [...$data, 'summary' => self::summary($data), 'seo' => [
             'title' => $company->seo_title ?: self::seoTitle($data),
             'description' => Seo::description($company->seo_description ?: self::seoDescription($data)),
             'robots' => $company->seo_noindex ? 'noindex,follow' : null,
@@ -96,5 +96,24 @@ class CompanyPresenter
             ! $services && $rankings ? 'Aparece en '.$rankings.($rankings === 1 ? ' ranking' : ' rankings').' de '.Seo::SITE_NAME.'.' : null,
             'Consulta su ficha, web y contacto.',
         ])->filter()->join(' ');
+    }
+
+    private static function summary(array $data): string
+    {
+        $category = $data['primaryCategory'] ? Seo::lowerFirst($data['primaryCategory']) : 'empresa digital';
+        $article = Seo::isMasculine($category) ? 'un' : 'una';
+        $place = $data['municipality'] ? "con sede en {$data['municipality']} (Almería)" : 'de la provincia de Almería';
+        $text = "En resumen: {$data['name']} es {$article} {$category} {$place}";
+        $text .= $data['foundedYear'] ? ", fundada en {$data['foundedYear']}." : '.';
+
+        if ($services = array_slice(array_filter($data['services']), 0, 3)) {
+            $text .= ' Trabaja en '.Seo::lowerFirst(implode(', ', $services)).'.';
+        }
+
+        if ($ranking = collect($data['rankings'])->filter()->sortBy('position')->first()) {
+            $text .= isset($ranking['position']) ? " Ocupa el puesto {$ranking['position']} en «{$ranking['title']}»." : " Aparece en «{$ranking['title']}».";
+        }
+
+        return $text;
     }
 }

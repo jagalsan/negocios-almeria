@@ -59,3 +59,19 @@ it('ajusta el h1 al número de empresas visibles y enlaza otros rankings', funct
         ->assertSee('Las 5 mejores consultoras IT de Almería')
         ->assertDontSee(route('rankings.show', $other->slug));
 });
+
+it('resume el ranking y lo expone en llms.txt', function () {
+    [$ranking] = rankingHistoryFixture();
+    $ranking->update(['status' => 'published', 'published_at' => now(), 'reviewed_at' => now()]);
+
+    $this->get(route('rankings.show', $ranking->slug))
+        ->assertOk()
+        ->assertSee('En resumen:')
+        ->assertSee('max-snippet:-1', false);
+
+    $this->get(route('llms'))
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+        ->assertSee('# Negocios Almería', false)
+        ->assertSee(route('rankings.show', $ranking->slug), false);
+});

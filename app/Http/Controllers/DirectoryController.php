@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\BuildLlmsTxt;
 use App\Data\CompanyPresenter;
 use App\Data\RankingPresenter;
 use App\Models\Category;
@@ -17,6 +18,11 @@ class DirectoryController extends Controller
     {
         return view('pages.home', [
             'rankings' => Ranking::published()->with(['category', 'entries' => fn ($query) => $query->whereHas('company', fn ($query) => $query->published()), 'entries.company'])->latest('reviewed_at')->get(),
+            'stats' => [
+                'companies' => Company::published()->count(),
+                'rankings' => Ranking::published()->count(),
+                'municipalities' => Municipality::whereHas('companies', fn ($query) => $query->published())->count(),
+            ],
             'municipalities' => Municipality::withCount(['companies' => fn ($query) => $query->published()])->orderByDesc('companies_count')->take(7)->get(),
         ]);
     }
@@ -91,9 +97,6 @@ class DirectoryController extends Controller
 
     public function llms()
     {
-        $rankings = Ranking::published()->get(['title', 'slug', 'answer']);
-        $text = "# Negocios Almería\n\nDirectorio editorial de empresas digitales de la provincia de Almería.\n\n## Rankings\n\n".$rankings->map(fn ($ranking) => "- [{$ranking->title}](".route('rankings.show', $ranking->slug)."): {$ranking->answer}")->join("\n");
-
-        return response($text)->header('Content-Type', 'text/plain; charset=UTF-8');
+        return response(app(BuildLlmsTxt::class)->handle())->header('Content-Type', 'text/plain; charset=UTF-8');
     }
 }

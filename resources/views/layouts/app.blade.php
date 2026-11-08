@@ -11,7 +11,7 @@
     @endphp
     <title>{{ $title }}</title>
     <meta name="description" content="{{ $description }}">
-    <meta name="robots" content="{{ $robots ?? 'index,follow,max-image-preview:large' }}">
+    <meta name="robots" content="{{ $robots ?? \App\Support\Seo::ROBOTS }}">
     <link rel="canonical" href="{{ $canonical }}">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate" type="text/plain" href="{{ route('llms') }}" title="LLMs">

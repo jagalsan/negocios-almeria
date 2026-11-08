@@ -6,6 +6,8 @@ use Illuminate\Support\Str;
 
 class Seo
 {
+    public const ROBOTS = 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1';
+
     public const SITE_NAME = 'Negocios Almería';
 
     public const TITLE_MAX = 60;
@@ -59,6 +61,9 @@ class Seo
             'url' => route('home'),
             'logo' => ['@type' => 'ImageObject', 'url' => asset('og-image.png'), 'width' => 1200, 'height' => 630],
             'email' => config('legal.email'),
+            'description' => 'Directorio editorial independiente con rankings de agencias, desarrolladores, startups y empresas digitales de la provincia de Almería.',
+            'knowsAbout' => ['Empresas digitales de Almería', 'Agencias de marketing en Almería', 'Desarrollo web y software en Almería', 'Ecosistema emprendedor de Almería'],
+            'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => config('legal.email'), 'availableLanguage' => 'es'],
             'areaServed' => ['@type' => 'AdministrativeArea', 'name' => 'Provincia de Almería'],
         ];
     }
