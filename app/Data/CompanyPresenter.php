@@ -102,7 +102,11 @@ class CompanyPresenter
     {
         $category = $data['primaryCategory'] ? Seo::lowerFirst($data['primaryCategory']) : 'empresa digital';
         $article = Seo::isMasculine($category) ? 'un' : 'una';
-        $place = $data['municipality'] ? "con sede en {$data['municipality']} (Almería)" : 'de la provincia de Almería';
+        $place = match ($data['municipality']) {
+            null => 'de la provincia de Almería',
+            'Almería' => 'con sede en Almería capital',
+            default => "con sede en {$data['municipality']} (Almería)",
+        };
         $text = "En resumen: {$data['name']} es {$article} {$category} {$place}";
         $text .= $data['foundedYear'] ? ", fundada en {$data['foundedYear']}." : '.';
 
