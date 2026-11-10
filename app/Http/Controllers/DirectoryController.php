@@ -58,7 +58,7 @@ class DirectoryController extends Controller
 
         return view('pages.companies', [
             'companies' => $companies,
-            'categories' => Category::where('is_published', true)->orderBy('sort_order')->get(),
+            'categories' => Category::where('is_published', true)->withCount(['companies' => fn ($query) => $query->published()])->orderBy('sort_order')->get(),
             'municipalities' => $municipalities,
             'municipality' => $municipality,
             'robots' => $indexable ? null : 'noindex,follow',
