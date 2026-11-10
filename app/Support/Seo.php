@@ -49,7 +49,7 @@ class Seo
     {
         $word = mb_strtolower(Str::before(trim($noun), ' '));
 
-        return str_ends_with($word, 'o') || str_ends_with($word, 'os') || in_array($word, ['coworking', 'coworkings'], true);
+        return str_ends_with($word, 'o') || str_ends_with($word, 'os') || in_array($word, ['coworking', 'coworkings', 'agente', 'agentes'], true);
     }
 
     public static function organization(): array

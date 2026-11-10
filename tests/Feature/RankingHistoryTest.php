@@ -75,3 +75,15 @@ it('resume el ranking y lo expone en llms.txt', function () {
         ->assertSee('# Negocios Almería', false)
         ->assertSee(route('rankings.show', $ranking->slug), false);
 });
+
+it('adapta el ranking de un municipio a su localidad', function () {
+    [$ranking] = rankingHistoryFixture();
+    $municipality = Municipality::create(['name' => 'Roquetas de Mar', 'slug' => 'roquetas-de-mar']);
+    $ranking->update(['municipality_id' => $municipality->id, 'reviewed_at' => now()]);
+
+    $this->get(route('rankings.show', $ranking->slug))
+        ->assertOk()
+        ->assertSee('en Roquetas de Mar')
+        ->assertSee('Roquetas de Mar (Almería)', false)
+        ->assertSee('sede en Roquetas de Mar');
+});
