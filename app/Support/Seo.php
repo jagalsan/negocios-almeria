@@ -65,6 +65,7 @@ class Seo
             'knowsAbout' => ['Empresas digitales de Almería', 'Agencias de marketing en Almería', 'Desarrollo web y software en Almería', 'Ecosistema emprendedor de Almería'],
             'contactPoint' => ['@type' => 'ContactPoint', 'contactType' => 'customer support', 'email' => config('legal.email'), 'availableLanguage' => 'es'],
             'areaServed' => ['@type' => 'AdministrativeArea', 'name' => 'Provincia de Almería'],
+            'founder' => config('legal.founder_name') ? ['@type' => 'Person', 'name' => config('legal.founder_name'), 'url' => config('legal.founder_url')] : null,
         ];
     }
 

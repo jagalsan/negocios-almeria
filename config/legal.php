@@ -8,4 +8,6 @@ return [
     'email' => env('LEGAL_OWNER_EMAIL', 'contacto@negociosalmeria.com'),
     'registry' => env('LEGAL_REGISTRY'),
     'jurisdiction' => env('LEGAL_JURISDICTION', 'Almería'),
+    'founder_name' => env('LEGAL_FOUNDER_NAME'),
+    'founder_url' => env('LEGAL_FOUNDER_URL'),
 ];
