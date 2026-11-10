@@ -9,6 +9,7 @@ Route::get('/', [DirectoryController::class, 'home'])->name('home');
 Route::get('/mejores/', [DirectoryController::class, 'rankings'])->name('rankings.index');
 Route::get('/mejores/{slug}/', [DirectoryController::class, 'ranking'])->name('rankings.show');
 Route::get('/empresas/', [DirectoryController::class, 'companies'])->name('companies.index');
+Route::get('/empresas/{slug}/', [DirectoryController::class, 'category'])->name('categories.show');
 Route::get('/empresa/{slug}/', [DirectoryController::class, 'company'])->name('companies.show');
 Route::get('/buscar/', [DirectoryController::class, 'search'])->name('search');
 Route::get('/llms.txt', [DirectoryController::class, 'llms'])->name('llms');

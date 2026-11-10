@@ -10,6 +10,8 @@ use Illuminate\Support\Collection;
 
 class RankingPositions
 {
+    public const TOP = 10;
+
     public static function visibleEntries(Ranking $ranking): Collection
     {
         $ranking->loadMissing('entries.company');
@@ -18,6 +20,11 @@ class RankingPositions
             ->filter(fn ($entry) => $entry->company->status === CompanyStatus::Published && filled($entry->company->website_url))
             ->sortBy('position')
             ->values();
+    }
+
+    public static function topEntries(Ranking $ranking): Collection
+    {
+        return self::visibleEntries($ranking)->take(self::TOP);
     }
 
     public static function forCompany(Ranking $ranking, Company $company): ?array

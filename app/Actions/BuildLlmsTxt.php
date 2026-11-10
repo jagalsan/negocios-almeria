@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\Category;
 use App\Models\Company;
 use App\Models\Municipality;
 use App\Models\Ranking;
@@ -39,7 +40,7 @@ class BuildLlmsTxt
         ];
 
         foreach ($rankings as $ranking) {
-            $entries = RankingPositions::visibleEntries($ranking);
+            $entries = RankingPositions::topEntries($ranking);
             $lines[] = '';
             $lines[] = "### [{$ranking->title}](".route('rankings.show', $ranking->slug).')';
             $lines[] = '';
@@ -56,6 +57,14 @@ class BuildLlmsTxt
                 $place = $entry->company->municipality?->name;
                 $lines[] = ($index + 1).". [{$entry->company->name}](".route('companies.show', $entry->company->slug).')'.($place ? " — {$place}" : '');
             }
+        }
+
+        $lines[] = '';
+        $lines[] = '## Listados completos por especialidad';
+        $lines[] = '';
+
+        foreach (Category::where('is_published', true)->withCount(['companies' => fn ($query) => $query->published()])->orderBy('sort_order')->get()->where('companies_count', '>', 0) as $category) {
+            $lines[] = "- [{$category->name_plural} en Almería](".route('categories.show', $category->slug)."): {$category->companies_count} empresas.";
         }
 
         $lines[] = '';

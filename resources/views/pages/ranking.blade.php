@@ -59,6 +59,7 @@ $schema = [
         </article>
         @endforeach
     </div>
+    <p style="margin-top:24px"><a class="button button-secondary" href="{{ $ranking['listingUrl'] }}">Ver todas las {{ \App\Support\Seo::lowerFirst($ranking['category']['namePlural']) }} de Almería</a></p>
 </section>
 <section class="section"><h2 class="section-title">Comparativa</h2><div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Municipio</th><th>Especialidad</th><th>Fundada</th><th>Valoración</th></tr></thead><tbody>@foreach($ranking['entries'] as $entry)<tr><td><a href="{{ $entry['company']['url'] }}">{{ $entry['company']['name'] }}</a></td><td>{{ $entry['company']['municipality'] }}</td><td>{{ $entry['company']['services'][0] ?? '—' }}</td><td>{{ $entry['company']['foundedYear'] ?? '—' }}</td><td>{{ $entry['company']['googleRating'] ? $entry['company']['googleRating'].'/5' : '—' }}</td></tr>@endforeach</tbody></table></div></section>
 <section class="section section-tint" style="margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)"><div class="company-grid"><div><h2 class="section-title">Cómo hemos elegido</h2><ol>@foreach($ranking['criteria'] as $criterion)<li>{{ $criterion }}</li>@endforeach</ol><p><a href="{{ route('pages.como-elaboramos-los-rankings') }}">Lee la metodología completa</a></p></div><div class="heading-meta">El orden lo decide el equipo editorial. Revisamos el ranking al menos cada seis meses.</div></div></section>

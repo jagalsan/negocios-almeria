@@ -6,6 +6,9 @@
     @foreach($rankings as $ranking)
     <url><loc>{{ route('rankings.show', $ranking->slug) }}</loc><lastmod>{{ $ranking->updated_at->toAtomString() }}</lastmod></url>
     @endforeach
+    @foreach($categories as $category)
+    <url><loc>{{ route('categories.show', $category->slug) }}</loc></url>
+    @endforeach
     @foreach($municipalities as $municipality)
     <url><loc>{{ route('companies.index', ['municipio' => $municipality->slug]) }}</loc></url>
     @endforeach

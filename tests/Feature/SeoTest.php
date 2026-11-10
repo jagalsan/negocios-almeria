@@ -43,7 +43,8 @@ it('indexa las páginas de municipio y desindexa los filtros por especialidad', 
         ->assertSee('Empresas digitales en Roquetas de Mar</h1>', false)
         ->assertSee('<link rel="canonical" href="'.e($url).'">', false)
         ->assertDontSee('noindex', false);
-    $this->get(route('companies.index', ['categoria' => 'agencias-seo']))->assertOk()->assertSee('content="noindex,follow"', false);
+    $this->get(route('companies.index', ['categoria' => 'agencias-seo']))->assertRedirect(route('categories.show', 'agencias-seo'));
+    $this->get(route('companies.index', ['categoria' => 'agencias-seo', 'municipio' => 'roquetas-de-mar']))->assertOk()->assertSee('content="noindex,follow"', false);
     $this->get(route('sitemap'))->assertOk()->assertSee($url, false);
 });
 

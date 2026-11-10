@@ -13,7 +13,8 @@ class RankingPresenter
     {
         $ranking->loadMissing(['category', 'municipality', 'author', 'entries.company.municipality', 'sponsorships.company']);
         $canonical = route('rankings.show', $ranking->slug);
-        $entries = RankingPositions::visibleEntries($ranking);
+        $all = RankingPositions::visibleEntries($ranking);
+        $entries = $all->take(RankingPositions::TOP);
         $plural = Seo::lowerFirst($ranking->category->name_plural);
         $article = Seo::isMasculine($plural) ? 'los' : 'las';
         $place = $ranking->municipality?->name ?? 'Almería';
@@ -26,6 +27,8 @@ class RankingPresenter
             'url' => $canonical,
             'category' => ['slug' => $ranking->category->slug, 'name' => $ranking->category->name, 'namePlural' => $ranking->category->name_plural],
             'municipality' => $ranking->municipality?->name,
+            'total' => $all->count(),
+            'listingUrl' => route('categories.show', $ranking->category->slug),
             'seo' => [
                 'title' => $ranking->seo_title ?: Seo::title("{$heading} ({$year}) · ".Seo::SITE_NAME, "{$heading} ({$year})", "Top {$entries->count()} {$plural} en {$place} ({$year})", "Top {$entries->count()} {$plural} en {$place}", $heading),
                 'description' => Seo::description($ranking->seo_description ?: "Ranking {$year} de {$article} {$entries->count()} mejores {$plural} de {$place}, revisado a mano: motivo de inclusión, servicios y contacto de cada empresa."),
