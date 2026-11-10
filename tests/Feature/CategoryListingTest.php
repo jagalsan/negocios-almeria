@@ -52,6 +52,6 @@ it('lista todas las empresas de la categoría con su puesto en el ranking', func
     $this->get(route('sitemap'))->assertSee(route('categories.show', $category->slug), false);
     $this->get(route('llms'))->assertSee(route('categories.show', $category->slug), false);
     $this->get(route('companies.index'))->assertOk()->assertSee('Agencias de marketing (13)')->assertSee(route('categories.show', $category->slug), false);
-    $this->get(route('home'))->assertSee('<p class="footer-title">Categorías</p>', false)->assertSee(route('categories.show', $category->slug), false);
+    $this->get(route('home'))->assertSee('Todas las categorías');
     $this->get(route('companies.show', 'agencia-1'))->assertOk()->assertSee('href="'.route('categories.show', $category->slug).'"', false);
 });

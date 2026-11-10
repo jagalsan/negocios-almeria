@@ -38,17 +38,18 @@ $schema = [
     </div>
     @if($ranking)<p style="margin-top:32px"><a class="button" href="{{ route('rankings.show', $ranking->slug) }}">Ver las {{ min($ranked, \App\Support\RankingPositions::TOP) }} mejores {{ $lower }} en Almería</a></p>@endif
 </div></section>
-<section class="section reading prose">
+<div class="container">
+<section class="section reading">
     <h2 class="section-title">Cómo ordenamos este listado</h2>
-    @if($category->description)<p>{{ $category->description }}</p>@endif
     <p>Solo incluimos empresas con web propia y presencia en la provincia de Almería. El orden sigue el ranking editorial, que decidimos con <a href="{{ route('pages.como-elaboramos-los-rankings') }}">criterios públicos</a> y que no se puede comprar. Las empresas sin puesto aparecen por orden alfabético.</p>
     @if($municipalRankings->isNotEmpty())
     <h2 class="section-title">Rankings por municipio</h2>
-    <ul>@foreach($municipalRankings as $local)<li><a href="{{ route('rankings.show', $local->slug) }}">{{ $plural }} en {{ $local->municipality->name }}</a></li>@endforeach</ul>
+    <nav class="category-index" aria-label="Rankings por municipio">@foreach($municipalRankings as $local)<a class="badge" href="{{ route('rankings.show', $local->slug) }}">{{ $plural }} en {{ $local->municipality->name }}</a>@endforeach</nav>
     @endif
     @if($others->isNotEmpty())
     <h2 class="section-title">Otros listados de empresas en Almería</h2>
-    <ul>@foreach($others as $other)<li><a href="{{ route('categories.show', $other->slug) }}">{{ $other->name_plural }} en Almería</a></li>@endforeach</ul>
+    <nav class="category-index" aria-label="Otros listados">@foreach($others as $other)<a class="badge" href="{{ route('categories.show', $other->slug) }}">{{ $other->name_plural }}</a>@endforeach</nav>
     @endif
 </section>
+</div>
 @endsection
