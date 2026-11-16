@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DirectoryController::class, 'home'])->name('home');
 Route::get('/mejores/', [DirectoryController::class, 'rankings'])->name('rankings.index');
+Route::permanentRedirect('/mejores/agencias-seo-roquetas-de-mar', '/mejores/agencias-seo');
 Route::get('/mejores/{slug}/', [DirectoryController::class, 'ranking'])->name('rankings.show');
 Route::get('/empresas/', [DirectoryController::class, 'companies'])->name('companies.index');
 Route::get('/empresas/{slug}/', [DirectoryController::class, 'category'])->name('categories.show');

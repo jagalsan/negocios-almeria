@@ -53,3 +53,7 @@ it('publica un único grafo JSON-LD válido en la portada', function () {
 
     expect($types)->toContain('Organization', 'WebSite', 'WebPage', 'ItemList');
 });
+
+it('redirige con 301 el ranking retirado de SEO en Roquetas al provincial', function () {
+    $this->get('/mejores/agencias-seo-roquetas-de-mar')->assertStatus(301)->assertRedirect('/mejores/agencias-seo');
+});
