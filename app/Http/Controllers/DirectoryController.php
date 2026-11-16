@@ -53,7 +53,7 @@ class DirectoryController extends Controller
         $municipalities = Municipality::orderBy('name')->get();
         $municipality = $municipalities->firstWhere('slug', $request->string('municipio')->toString());
         $companies = $query->paginate(24)->withQueryString();
-        $indexable = ! $request->filled('categoria') && ($municipality || ! $request->filled('municipio')) && $companies->isNotEmpty();
+        $indexable = ! $request->filled('categoria') && ! $request->filled('municipio') && $companies->isNotEmpty();
         $canonicalQuery = array_filter(['municipio' => $municipality?->slug, 'page' => $companies->currentPage() > 1 ? $companies->currentPage() : null]);
 
         return view('pages.companies', [
@@ -61,6 +61,7 @@ class DirectoryController extends Controller
             'categories' => Category::where('is_published', true)->withCount(['companies' => fn ($query) => $query->published()])->orderBy('sort_order')->get(),
             'municipalities' => $municipalities,
             'municipality' => $municipality,
+            'localRankings' => Ranking::published()->whereNotNull('municipality_id')->with(['category', 'municipality'])->get(),
             'robots' => $indexable ? null : 'noindex,follow',
             'canonical' => route('companies.index', $canonicalQuery),
         ]);
@@ -115,8 +116,9 @@ class DirectoryController extends Controller
         return response()->view('pages.sitemap', [
             'rankings' => Ranking::published()->get(['slug', 'updated_at']),
             'companies' => Company::published()->where('seo_noindex', false)->get(['slug', 'updated_at']),
-            'municipalities' => Municipality::whereHas('companies', fn ($query) => $query->published())->orderBy('name')->get(['slug']),
-            'categories' => Category::where('is_published', true)->whereHas('companies', fn ($query) => $query->published())->orderBy('sort_order')->get(['slug']),
+            'categories' => Category::where('is_published', true)->whereHas('companies', fn ($query) => $query->published())->withMax(['companies as last_update' => fn ($query) => $query->published()], 'companies.updated_at')->orderBy('sort_order')->get(),
+            'lastModified' => Company::published()->max('updated_at'),
+            'rankingsModified' => Ranking::published()->max('updated_at'),
             'pages' => Page::where('status', 'published')->get(['slug', 'updated_at']),
         ])->header('Content-Type', 'application/xml; charset=UTF-8');
     }

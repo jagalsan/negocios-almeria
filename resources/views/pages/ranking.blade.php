@@ -22,7 +22,7 @@ $schema = [
     <div class="sponsored-row">
         <span class="logo-box">{{ Str::upper(Str::substr($sponsor['company']['name'], 0, 2)) }}</span>
         <div><strong class="font-display">{{ $sponsor['company']['name'] }}</strong><div>{{ $sponsor['company']['shortDescription'] }}</div></div>
-        <a class="button button-secondary button-small" href="{{ $sponsor['company']['website'] }}" rel="sponsored noopener">Visitar web</a>
+        <a class="button button-secondary button-small" href="{{ $sponsor['company']['website'] }}" rel="sponsored noopener">Web de {{ $sponsor['company']['name'] }}</a>
     </div>
     @endforeach
 </section>
@@ -34,7 +34,7 @@ $schema = [
         <article class="ranking-row">
             <div class="ranking-position-block">
                 <div class="ranking-position">{{ str_pad($entry['position'], 2, '0', STR_PAD_LEFT) }}</div>
-                <x-ranking-movement :movement="$entry['movement']" :label="$entry['movementLabel']" />
+                @if($entry['movement'] !== 0)<x-ranking-movement :movement="$entry['movement']" :label="$entry['movementLabel']" />@endif
             </div>
             <div class="logo-box">{{ Str::upper(Str::substr($entry['company']['name'], 0, 2)) }}</div>
             <div class="ranking-content">
@@ -50,22 +50,23 @@ $schema = [
                 </p>
                 <p class="ranking-reason">{{ $entry['reason'] }}</p>
                 <div class="row-actions">
-                    <a class="button button-secondary button-small" href="{{ $entry['company']['url'] }}">Ver ficha</a>
+                    <a class="button button-secondary button-small" href="{{ $entry['company']['url'] }}">Ficha de {{ $entry['company']['name'] }}</a>
                     @if($entry['company']['website'])
-                    <a class="button button-link button-small" href="{{ $entry['company']['website'] }}" rel="noopener">Visitar web</a>
+                    <a class="button button-link button-small" href="{{ $entry['company']['website'] }}" rel="noopener">Web de {{ $entry['company']['name'] }}</a>
                     @endif
                 </div>
             </div>
         </article>
         @endforeach
     </div>
-    <p style="margin-top:24px"><a class="button button-secondary" href="{{ $ranking['listingUrl'] }}">Ver todas las {{ \App\Support\Seo::lowerFirst($ranking['category']['namePlural']) }} de Almería</a></p>
+    <p style="margin-top:24px"><a class="button button-secondary" href="{{ $ranking['listingUrl'] }}">Directorio completo por municipio</a></p>
 </section>
-<section class="section"><h2 class="section-title">Comparativa</h2><div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Municipio</th><th>Especialidad</th><th>Fundada</th><th>Valoración</th></tr></thead><tbody>@foreach($ranking['entries'] as $entry)<tr><td><a href="{{ $entry['company']['url'] }}">{{ $entry['company']['name'] }}</a></td><td>{{ $entry['company']['municipality'] }}</td><td>{{ $entry['company']['services'][0] ?? '—' }}</td><td>{{ $entry['company']['foundedYear'] ?? '—' }}</td><td>{{ $entry['company']['googleRating'] ? $entry['company']['googleRating'].'/5' : '—' }}</td></tr>@endforeach</tbody></table></div></section>
+@php($cols = $ranking['columns'])
+<section class="section"><h2 class="section-title">Comparativa</h2><div class="table-wrap"><table><thead><tr><th>Empresa</th><th>Municipio</th>@if($cols['services'])<th>Servicios principales</th>@endif @if($cols['founded'])<th>Fundada</th>@endif @if($cols['rating'])<th>Valoración en Google</th>@endif</tr></thead><tbody>@foreach($ranking['entries'] as $entry)<tr><td><a href="{{ $entry['company']['url'] }}">{{ $entry['company']['name'] }}</a></td><td>{{ $entry['company']['municipality'] }}</td>@if($cols['services'])<td>{{ implode(', ', array_slice($entry['company']['services'], 0, 3)) }}</td>@endif @if($cols['founded'])<td>{{ $entry['company']['foundedYear'] }}</td>@endif @if($cols['rating'])<td>{{ $entry['company']['googleRating'] ? $entry['company']['googleRating'].'/5' : '' }}</td>@endif</tr>@endforeach</tbody></table></div></section>
 <section class="section section-tint" style="margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)"><div class="company-grid"><div><h2 class="section-title">Cómo hemos elegido</h2><ol>@foreach($ranking['criteria'] as $criterion)<li>{{ $criterion }}</li>@endforeach</ol><p><a href="{{ route('pages.como-elaboramos-los-rankings') }}">Lee la metodología completa</a></p></div><div class="heading-meta">El orden lo decide el equipo editorial. Revisamos el ranking al menos cada seis meses.</div></div></section>
 <section class="section prose">{!! $ranking['introHtml'] !!}</section>
 <section class="section reading"><h2 class="section-title">Preguntas frecuentes</h2><div class="faq">@foreach($ranking['faq'] as $faq)<details><summary>{{ $faq['q'] }}</summary><p>{{ $faq['a'] }}</p></details>@endforeach</div></section>
 @if($ranking['related'])<section class="section reading"><h2 class="section-title">Otros rankings de empresas en Almería</h2><ul>@foreach($ranking['related'] as $related)<li><a href="{{ $related['url'] }}">{{ $related['name'] }}</a></li>@endforeach</ul></section>@endif
-<section class="section section-tint" style="margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)"><h2 class="section-title">¿Tu empresa debería estar aquí?</h2><p class="lead">{{ $ranking['closingText'] }}</p><div class="row-actions"><a class="button" href="{{ route('pages.anade-tu-empresa') }}">Añadir mi empresa</a><a class="button button-secondary" href="{{ route('companies.index') }}">Reclamar mi ficha</a></div></section>
+<section class="section section-tint" style="margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)"><h2 class="section-title">¿Tu empresa debería estar aquí?</h2><p class="lead">{{ $ranking['closingText'] }}</p><div class="row-actions"><a class="button" href="{{ route('pages.anade-tu-empresa') }}">Añadir mi empresa</a><a class="button button-secondary" href="{{ route('pages.anade-tu-empresa') }}">Reclamar mi ficha</a></div></section>
 </div>
 @endsection

@@ -51,10 +51,37 @@ class RankingPresenter
             })->all(),
             'faq' => $ranking->faq ?? [],
             'closingText' => $ranking->closing_text,
-            'related' => Ranking::published()->whereKeyNot($ranking->id)->with(['category', 'municipality'])->orderBy('title')->get()
-                ->map(fn (Ranking $related) => ['name' => $related->category->name_plural.' en '.($related->municipality?->name ?? 'Almería'), 'url' => route('rankings.show', $related->slug)])
-                ->all(),
+            'columns' => [
+                'services' => self::filledEnough($entries, fn ($entry) => filled($entry->company->services)),
+                'founded' => self::filledEnough($entries, fn ($entry) => filled($entry->company->founded_year)),
+                'rating' => self::filledEnough($entries, fn ($entry) => filled($entry->company->google_rating)),
+            ],
+            'related' => self::related($ranking),
         ];
+    }
+
+    private static function filledEnough($entries, callable $filled): bool
+    {
+        return $entries->isNotEmpty() && $entries->filter($filled)->count() * 2 >= $entries->count();
+    }
+
+    private static function related(Ranking $ranking): array
+    {
+        $slug = $ranking->category->slug;
+        $family = collect(config('directory.families'))->first(fn ($slugs) => in_array($slug, $slugs, true)) ?? [];
+        $published = Ranking::published()->whereKeyNot($ranking->id)->with(['category', 'municipality'])->get();
+        $sameCategory = $published->where('category_id', $ranking->category_id)->sortBy(fn (Ranking $related) => $related->municipality_id === null ? 0 : 1);
+        $siblings = $published->filter(fn (Ranking $related) => $related->municipality_id === null && $related->category_id !== $ranking->category_id && in_array($related->category->slug, $family, true))
+            ->sortBy(fn (Ranking $related) => array_search($related->category->slug, $family, true));
+
+        return $sameCategory->concat($siblings)->take(8)->map(fn (Ranking $related) => [
+            'name' => match (true) {
+                $related->municipality !== null => $related->category->name_plural.' en '.$related->municipality->name,
+                $related->category_id === $ranking->category_id => 'Ranking provincial de '.Seo::lowerFirst($related->category->name_plural),
+                default => $related->category->name_plural.' en Almería',
+            },
+            'url' => route('rankings.show', $related->slug),
+        ])->values()->all();
     }
 
     private static function summary(Ranking $ranking, $entries, string $heading): ?string

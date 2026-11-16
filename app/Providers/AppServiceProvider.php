@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Ranking;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useTailwind();
         View::composer(['layouts.app'], function ($view) {
             $view->with('navCategories', Category::query()->where('is_published', true)->orderBy('sort_order')->get());
+            $view->with('navLocalRankings', Ranking::published()->whereNotNull('municipality_id')->with(['category', 'municipality'])->get());
         });
     }
 }

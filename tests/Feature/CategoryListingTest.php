@@ -33,16 +33,24 @@ it('muestra solo el top 10 en el ranking y enlaza al listado completo', function
         ->assertSee('"numberOfItems":10', false)
         ->assertSee('Agencia 10')
         ->assertDontSee('Agencia 11')
-        ->assertSee(route('categories.show', $category->slug), false);
+        ->assertSee(route('categories.show', $category->slug), false)
+        ->assertSee('Directorio completo por municipio')
+        ->assertSee('Ficha de Agencia 1')
+        ->assertDontSee('Ver ficha')
+        ->assertDontSee('Sin cambios')
+        ->assertDontSee('<h2>Tu privacidad', false);
 });
 
 it('lista todas las empresas de la categoría con su puesto en el ranking', function () {
     [$category] = listingFixture();
 
     $this->get(route('categories.show', $category->slug))->assertOk()
-        ->assertSee('Agencias de marketing en Almería</h1>', false)
-        ->assertSee('Top 10 · Puesto 1 del ranking')
-        ->assertSee('Puesto 12 del ranking')
+        ->assertSee('<title>Directorio de agencias de marketing en Almería por municipio</title>', false)
+        ->assertSee('Directorio de agencias de marketing en Almería</h1>', false)
+        ->assertDontSee('listado completo')
+        ->assertSee('Ver el ranking de las 10 mejores')
+        ->assertSee('Puesto 1 en el ranking')
+        ->assertSee('Puesto 12 en el ranking')
         ->assertSee('Agencia 13')
         ->assertSee('"numberOfItems":13', false)
         ->assertDontSee('noindex', false)

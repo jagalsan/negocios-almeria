@@ -204,14 +204,14 @@ a.pagination-link:hover { background: #0D5E6D; color: #FFFFFF; }
 .cookie-consent { position: relative; z-index: 100; }
 .cookie-banner { position: fixed; inset: auto 0 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: center; padding: 24px max(24px, calc((100vw - 1200px) / 2)); border-top: 4px solid #F0C419; background: #FFFFFF; color: #1C2B2D; }
 .cookie-banner-copy { max-width: 760px; }
-.cookie-banner-copy h2 { margin: 0 0 8px; font: 750 1.375rem/1.2 'Archivo', sans-serif; }
+.cookie-banner-title { margin: 0 0 8px; font: 750 1.375rem/1.2 'Archivo', sans-serif; }
 .cookie-banner-copy p { margin: 0 0 6px; line-height: 1.5; }
 .cookie-banner-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 420px; }
 .cookie-dialog { position: fixed; inset: 0; width: min(680px, calc(100% - 32px)); max-height: calc(100vh - 48px); margin: auto; padding: 0; overflow-y: auto; border: 1px solid #1C2B2D; border-radius: 4px; background: #FFFFFF; color: #1C2B2D; }
 .cookie-dialog::backdrop { background: rgba(8, 63, 74, .72); }
 .cookie-dialog form { padding: 32px; }
 .cookie-dialog-header { display: flex; justify-content: space-between; gap: 24px; padding-bottom: 20px; border-bottom: 1px solid #C9D6D0; }
-.cookie-dialog-header h2 { margin: 0 0 8px; font: 750 1.75rem/1.15 'Archivo', sans-serif; }
+.cookie-dialog-title { margin: 0 0 8px; font: 750 1.75rem/1.15 'Archivo', sans-serif; }
 .cookie-dialog-header p { margin: 0; }
 .cookie-dialog-close { align-self: flex-start; padding: 4px; border: 0; background: transparent; color: #0D5E6D; font: 600 .875rem/1.2 'Archivo', sans-serif; text-decoration: underline; cursor: pointer; }
 .cookie-category { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 20px 0; border-bottom: 1px solid #C9D6D0; cursor: pointer; }

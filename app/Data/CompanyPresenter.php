@@ -55,6 +55,9 @@ class CompanyPresenter
             'updatedAt' => $company->updated_at?->toIso8601String(),
         ];
 
+        $genericName = preg_match('/almer[ií]a/iu', $company->name) && $data['primaryCategory'] && $data['municipality'];
+        $data['h1'] = $genericName ? "{$company->name}: ".Seo::lowerFirst($data['primaryCategory'])." en {$data['municipality']}" : $company->name;
+
         return [...$data, 'summary' => self::summary($data), 'seo' => [
             'title' => $company->seo_title ?: self::seoTitle($data),
             'description' => Seo::description($company->seo_description ?: self::seoDescription($data)),

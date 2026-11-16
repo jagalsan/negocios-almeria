@@ -72,7 +72,7 @@ class BuildLlmsTxt
         $lines[] = '';
 
         foreach ($municipalities as $municipality) {
-            $lines[] = "- [{$municipality->name}](".route('companies.index', ['municipio' => $municipality->slug])."): {$municipality->companies_count} empresas.";
+            $lines[] = "- {$municipality->name}: {$municipality->companies_count} empresas.";
         }
 
         return implode("\n", $lines)."\n";
