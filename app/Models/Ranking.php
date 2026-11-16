@@ -21,7 +21,7 @@ class Ranking extends Model
             $ranking->uuid ??= (string) Str::uuid();
         });
         static::saving(function (Ranking $ranking) {
-            if ($ranking->status === 'published' && ($ranking->entries()->count() < 5 || count($ranking->faq ?? []) < 4 || count($ranking->criteria ?? []) < 3)) {
+            if ($ranking->status === 'published' && $ranking->isDirty('status') && ($ranking->entries()->count() < 5 || count($ranking->faq ?? []) < 4 || count($ranking->criteria ?? []) < 3)) {
                 throw ValidationException::withMessages(['status' => 'Para publicar faltan al menos 5 empresas, 3 criterios o 4 preguntas frecuentes.']);
             }
         });
