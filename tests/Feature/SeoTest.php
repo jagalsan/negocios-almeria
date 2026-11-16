@@ -35,17 +35,17 @@ it('genera title, description y schema de la ficha de empresa', function () {
         ->toContain('Organization', 'WebSite', 'ProfilePage', 'ProfessionalService', 'BreadcrumbList');
 });
 
-it('indexa las páginas de municipio y desindexa los filtros por especialidad', function () {
+it('desindexa los filtros de municipio y redirige los de especialidad', function () {
     seoCompany();
     $url = route('companies.index', ['municipio' => 'roquetas-de-mar']);
 
     $this->get($url)->assertOk()
         ->assertSee('Empresas digitales en Roquetas de Mar</h1>', false)
         ->assertSee('<link rel="canonical" href="'.e($url).'">', false)
-        ->assertDontSee('noindex', false);
+        ->assertSee('content="noindex,follow"', false);
     $this->get(route('companies.index', ['categoria' => 'agencias-seo']))->assertRedirect(route('categories.show', 'agencias-seo'));
     $this->get(route('companies.index', ['categoria' => 'agencias-seo', 'municipio' => 'roquetas-de-mar']))->assertOk()->assertSee('content="noindex,follow"', false);
-    $this->get(route('sitemap'))->assertOk()->assertSee($url, false);
+    $this->get(route('sitemap'))->assertOk()->assertDontSee('municipio=', false);
 });
 
 it('publica un único grafo JSON-LD válido en la portada', function () {

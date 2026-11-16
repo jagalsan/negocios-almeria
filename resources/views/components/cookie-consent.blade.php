@@ -8,7 +8,7 @@
 >
     <section class="cookie-banner" data-cookie-banner role="region" aria-label="Preferencias de cookies">
         <div class="cookie-banner-copy">
-            <h2>Tu privacidad, a tu elección</h2>
+            <div class="cookie-banner-title" role="heading" aria-level="2">Tu privacidad, a tu elección</div>
             <p>Usamos cookies necesarias para que la web funcione. Solo cargaremos Google Tag Manager y Analytics si aceptas las cookies analíticas. Puedes aceptar, rechazar o configurar tus preferencias.</p>
             <a href="{{ route('pages.cookies') }}">Leer la política de cookies</a>
         </div>
@@ -22,7 +22,7 @@
     <dialog class="cookie-dialog" data-cookie-dialog aria-labelledby="cookie-dialog-title">
         <form method="dialog">
             <div class="cookie-dialog-header">
-                <div><h2 id="cookie-dialog-title">Configurar cookies</h2><p>Elige qué categorías permites. Puedes cambiar esta decisión en cualquier momento.</p></div>
+                <div><div id="cookie-dialog-title" class="cookie-dialog-title" role="heading" aria-level="2">Configurar cookies</div><p>Elige qué categorías permites. Puedes cambiar esta decisión en cualquier momento.</p></div>
                 <button type="button" class="cookie-dialog-close" data-cookie-close aria-label="Cerrar">Cerrar</button>
             </div>
             <div class="cookie-category">
